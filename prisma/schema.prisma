@@ -14,6 +14,95 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+
+// phase
+//     text str
+//     controls [] control
+//     history [] str
+//     num int
+    
+// functor
+//     phases [] phase
+//     latest_phase int
+
+// control
+//     typeof enum Button || Slider
+//     linkTo
+
+// Button
+//     name str
+//     value str
+
+// Slider
+//     name str
+//     value str
+
+// Version
+//     text str
+//     phase phase
+    
+model Phase {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    text      String
+    controls  Control[]
+    history   Version[]
+    num       Int
+    functor   Functor  @relation(fields: [functorId], references: [id], onDelete: Cascade)
+    functorId String
+}
+
+model Version {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    text      String
+    phase     Phase    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+    phaseId   String
+}
+
+
+model Control {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    typeof    String
+    linkTo    String
+    phase     Phase    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+    phaseId   String
+    buttons  Button[]
+    sliders  Slider[]
+}
+
+model Button {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    name      String
+    value     String
+    control   Control  @relation(fields: [controlId], references: [id], onDelete: Cascade)
+    controlId String
+}
+
+model Slider {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    name      String
+    value     String
+    control   Control  @relation(fields: [controlId], references: [id], onDelete: Cascade)
+    controlId String
+}
+
+model Functor {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    phases    Phase[]
+    latestPhase Int
+}
+
 model Example {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
